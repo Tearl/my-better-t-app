@@ -24,6 +24,14 @@
 - **IAM Identity Center**：团队成员、控制台访问、权限边界和 SSO 管理。
 - **S3**：用户上传图片/音频、生成视频、缩略图、静态资源和下载文件存储。
 
+### 开发约定：参数写入 env 占位
+
+开发过程中所有需要的参数/凭证（数据库连接、AWS 凭证、第三方 API Key、支付密钥、AIGC 服务凭证等）**一律写到 env 文件中以占位符形式声明即可**，不要把真实值硬编码进代码，也不必在开发阶段填入真实密钥：
+
+- 在对应的 `.env`（或 `.env.example`）中以占位形式声明，如 `AWS_REGION=`、`DATABASE_URL=postgres://<user>:<pass>@<host>/<db>`、`BEDROCK_API_KEY=__PLACEHOLDER__`。
+- 代码通过 `@my-better-t-app/env` 统一读取环境变量，禁止在源码中硬编码真实凭证。
+- 真实值由部署环境/Secrets Manager 注入（见上文 AWS 资源），不进入代码仓库。
+
 ---
 
 # Ultracite Code Standards
