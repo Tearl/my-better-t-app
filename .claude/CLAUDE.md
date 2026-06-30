@@ -1,3 +1,28 @@
+# 项目简介
+
+`my-better-t-app` 是一个基于 TypeScript 全栈技术栈的 Web 应用，前端采用 Vite + React + TanStack（Router/Form/Query）+ tRPC，认证使用 Better Auth，当前核心功能为用户认证模块（登录/注册）。本项目以 **AWS 云端资源为主**进行部署与基础设施承载，完整的技术栈与架构详见：https://www.processon.com/view/link/62e77f4f7d9c08072e6eea09 （ProcessOn 架构图，主要技术栈均在该图中）。
+
+---
+
+## AWS Architecture Resources
+本项目云端架构优先使用以下 AWS 资源，涉及功能设计、接口实现、部署方案、
+权限配置和成本评估时，应优先参考这些服务边界：
+- Aurora and RDS:业务数据库、项目记录、订单记录、用户生成任务元数据。
+- Secrets Manager：效据库密码、第三方 API Key、支付密钥、AIGC 服务凭证等敏感配苣。
+- Key Management Service：用户上传文件、生成视频、敏感数据和密钥材料加密。
+- Lightsail：轻量部署、测试环境或独立服务承载。
+- Amazon Bedrock: AIGC 能力入口，用于提示词理解、多模态生成链路或内容生成编排。
+- Amazon Developer in chat applications：研发辅助、运维问答、团队协作中的AWS 开发支持。
+- Amazon EventBridge: •异步任务事件、视频生成状态流转、支付成功事件、通知触发。
+- 账单与成本管理：按项目跟踪AWS成本，评估生成任务、存储、数据库和队列成本。
+- EC2: 后端服务、worker、AIGC 任务编排或需要常驻计算的服务。
+- API Gateway：对外API 入口，承接 WebApp 与后端服务之间的请求。
+- Amazon Q Business：面向业务知识库、运营文档或内部向答能力。
+- Amazon Developer；代码开发、AWS 资源配置和排障辅助。
+- Amazon Q:AWS 侧智能助手与资源查询辅助。
+- IAM Identity Center：团队成员、控制台访问、权限边界和 SSO 管理。
+- S3：用户上传图片/音频、生成视频、缩略图、静态资源和下载文件存储。
+
 # Ultracite Code Standards
 
 This project uses **Ultracite**, a zero-config preset that enforces strict code quality standards through automated formatting and linting.
