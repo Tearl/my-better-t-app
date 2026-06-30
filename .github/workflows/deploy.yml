@@ -1,0 +1,90 @@
+name: Deploy (AWS SAM)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/server/**"
+      - "packages/**"
+      - "template.yaml"
+      - "samconfig.toml"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: 部署环境
+        required: true
+        default: prod
+
+# OIDC 免长期密钥假设角色部署
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: us-east-1
+  STAGE: ${{ github.event.inputs.stage || 'prod' }}
+
+jobs:
+  deploy:
+    name: Build & Deploy Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Lambda bundle
+        # 仅打包，不在 CI 校验运行时 env（真实值在部署参数中注入）
+        env:
+          SKIP_ENV_VALIDATION: "true"
+        run: pnpm --filter server build:lambda
+
+      - name: Setup AWS SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: SAM deploy
+        run: |
+          sam deploy \
+            --stack-name "my-better-t-app-${STAGE}" \
+            --region "${AWS_REGION}" \
+            --capabilities CAPABILITY_IAM \
+            --resolve-s3 \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset \
+            --parameter-overrides \
+              Stage="${STAGE}" \
+              DatabaseUrl="${{ secrets.DATABASE_URL }}" \
+              BetterAuthSecret="${{ secrets.BETTER_AUTH_SECRET }}" \
+              BetterAuthUrl="${{ secrets.BETTER_AUTH_URL }}" \
+              CorsOrigin="${{ secrets.CORS_ORIGIN }}"
+
+      - name: Output API URL
+        run: |
+          aws cloudformation describe-stacks \
+            --stack-name "my-better-t-app-${STAGE}" \
+            --region "${AWS_REGION}" \
+            --query "Stacks[0].Outputs" --output table

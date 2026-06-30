@@ -1,0 +1,11 @@
+version = 0.1
+
+[default.global.parameters]
+stack_name = "my-better-t-app"
+
+[default.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+region = "us-east-1"
+resolve_s3 = true
+confirm_changeset = false
+fail_on_empty_changeset = false

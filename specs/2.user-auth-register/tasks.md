@@ -16,20 +16,20 @@
 
 ### 功能 1: 注册表单字段
 
-- [ ] T-001: 在 auth-form 注册模式下条件渲染用户名 + 确认密码字段（复用 `AuthField`，用户名 `User`、确认密码 `Lock`+password 切换），与已有邮箱/密码字段组合 ~30min
+- [x] T-001: 在 auth-form 注册模式下条件渲染用户名 + 确认密码字段（复用 `AuthField`，用户名 `User`、确认密码 `Lock`+password 切换），与已有邮箱/密码字段组合 ~30min
 
 ### 功能 2: 注册校验
 
-- [ ] T-002: 定义 `registerSchema`（username ≥ 2、email 合法、password ≥ 8）并用 `.refine` 实现确认密码一致（错误归属 confirm）；`validators.onSubmit` 按 mode 选择 schema ~15min
+- [x] T-002: 定义 `registerSchema`（username ≥ 2、email 合法、password ≥ 8）并用 `.refine` 实现确认密码一致（错误归属 confirm）；`validators.onSubmit` 按 mode 选择 schema ~15min
 
 ### 功能 3: 注册提交集成
 
-- [ ] T-003: 接入 `authClient.signUp.email({ name, email, password })`，实现成功态 + toast「注册成功」、失败 toast 错误信息 ~15min
+- [x] T-003: 接入 `authClient.signUp.email({ name, email, password })`，实现成功态 + toast「注册成功」、失败 toast 错误信息 ~15min
 
 ### 功能 4: 模式联动与第三方占位
 
-- [ ] T-004: 注册态标题/副标题与 `AuthSwitchPrompt`（「已有账号？去登录」）联动，`switchMode` 切换时 reset 表单与成功态 ~15min
-- [ ] T-005: 接入 `AuthSocialButtons`（微信/QQ），点击 toast「{渠道} 登录即将上线」占位 ~15min
+- [x] T-004: 注册态标题/副标题与 `AuthSwitchPrompt`（「已有账号？去登录」）联动，`switchMode` 切换时 reset 表单与成功态 ~15min
+- [x] T-005: 接入 `AuthSocialButtons`（微信/QQ），点击 toast「{渠道} 登录即将上线」占位 ~15min
 
 ### 集成与测试
 

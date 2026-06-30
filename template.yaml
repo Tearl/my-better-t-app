@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  my-better-t-app — Hono (tRPC + Better Auth) 后端，部署为 AWS Lambda + API Gateway HTTP API。
+
+Parameters:
+  Stage:
+    Type: String
+    Default: prod
+    Description: 部署环境标识（prod / staging 等）。
+  DatabaseUrl:
+    Type: String
+    NoEcho: true
+    Description: 业务数据库连接串（Aurora/RDS）。占位即可，真实值由 CI/Secrets Manager 注入。
+    Default: ""
+  BetterAuthSecret:
+    Type: String
+    NoEcho: true
+    Description: Better Auth 密钥（>=32 位）。占位即可，真实值由 CI/Secrets Manager 注入。
+    Default: ""
+  BetterAuthUrl:
+    Type: String
+    Description: 认证服务对外 URL。
+    Default: ""
+  CorsOrigin:
+    Type: String
+    Description: 允许跨域的前端地址。
+    Default: ""
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Architectures:
+      - arm64
+    MemorySize: 512
+    Timeout: 30
+
+Resources:
+  ServerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "my-better-t-app-server-${Stage}"
+      CodeUri: apps/server/dist-lambda/
+      Handler: lambda.handler
+      Description: Hono 后端（tRPC + Better Auth）
+      Environment:
+        Variables:
+          NODE_ENV: production
+          DATABASE_URL: !Ref DatabaseUrl
+          BETTER_AUTH_SECRET: !Ref BetterAuthSecret
+          BETTER_AUTH_URL: !Ref BetterAuthUrl
+          CORS_ORIGIN: !Ref CorsOrigin
+      Events:
+        ApiRoot:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: ANY
+        ApiProxy:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+
+Outputs:
+  ApiUrl:
+    Description: HTTP API 入口地址（设为前端 VITE_SERVER_URL）。
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+  FunctionArn:
+    Description: 后端 Lambda 函数 ARN。
+    Value: !GetAtt ServerFunction.Arn

@@ -5,8 +5,12 @@ node_modules
 
 # Build outputs
 dist
+dist-lambda
 build
 *.tsbuildinfo
+
+# AWS SAM
+.aws-sam
 
 # Generated files
 apps/web/src/routeTree.gen.ts
