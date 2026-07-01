@@ -12,6 +12,7 @@
     "check-types": "turbo run check-types",
     "dev:web": "turbo run dev -F web",
     "dev:server": "turbo run dev -F server",
+    "db:tunnel": "bash scripts/db-tunnel.sh",
     "db:push": "turbo run db:push -F @my-better-t-app/db",
     "db:studio": "turbo run db:studio -F @my-better-t-app/db",
     "db:generate": "turbo run db:generate -F @my-better-t-app/db",

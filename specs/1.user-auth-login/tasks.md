@@ -35,7 +35,7 @@
 
 ### 集成与测试
 
-- [ ] T-008: 登录流程联调与 E2E（校验报错 / 登录成功 toast / 失败 toast / 加载态 / 提交禁用），并跑 `pnpm dlx ultracite check` ~30min
+- [x] T-008: 登录流程联调与 E2E（校验报错 / 登录成功 toast / 失败 toast / 加载态 / 提交禁用），并跑 `pnpm dlx ultracite check` ~30min
 
 ## 依赖关系
 

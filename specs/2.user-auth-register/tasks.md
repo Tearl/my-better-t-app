@@ -33,7 +33,7 @@
 
 ### 集成与测试
 
-- [ ] T-006: 注册流程联调与 E2E（四项校验报错 / 注册成功 toast / 失败 toast / 社交占位提示），并跑 `pnpm dlx ultracite check` ~30min
+- [x] T-006: 注册流程联调与 E2E（四项校验报错 / 注册成功 toast / 失败 toast / 社交占位提示），并跑 `pnpm dlx ultracite check` ~30min
 
 ## 依赖关系
 

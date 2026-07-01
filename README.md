@@ -78,6 +78,13 @@ If you want to add app-specific blocks instead of shared primitives, run the sha
 
 - Run checks: `pnpm run check`
 
+## Testing
+
+- **E2E (web)** — Playwright covers the auth flows (login + register) with the Better Auth backend mocked via route interception, so the suite runs without a live AWS-hosted auth service.
+  - Run: `cd apps/web && pnpm run test:e2e`
+  - Specs: `apps/web/e2e/login.spec.ts`, `apps/web/e2e/register.spec.ts`
+  - Config: `apps/web/playwright.config.ts` (boots `pnpm dev` on port 3001)
+
 ## Project Structure
 
 ```
@@ -105,5 +112,6 @@ my-better-t-app/
 - `pnpm run db:migrate`: Run database migrations
 - `pnpm run db:studio`: Open database studio UI
 - `pnpm run check`: Run Biome formatting and linting
+- `cd apps/web && pnpm run test:e2e`: Run Playwright E2E tests for the web app
 - `cd apps/docs && pnpm run dev`: Start documentation site
 - `cd apps/docs && pnpm run build`: Build documentation site
