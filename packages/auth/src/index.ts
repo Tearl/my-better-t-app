@@ -20,6 +20,12 @@ export function createAuth() {
 		secret: env.BETTER_AUTH_SECRET,
 		baseURL: env.BETTER_AUTH_URL,
 		advanced: {
+			// 让 app.toton123.xyz 与 api.toton123.xyz 共享登录 Cookie，
+			// 避免跨站第三方 Cookie 被浏览器拦截。
+			crossSubDomainCookies: {
+				enabled: true,
+				domain: ".toton123.xyz",
+			},
 			defaultCookieAttributes: {
 				sameSite: "none",
 				secure: true,

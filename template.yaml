@@ -26,6 +26,14 @@ Parameters:
     Type: String
     Description: 允许跨域的前端地址。
     Default: ""
+  LambdaSecurityGroupIds:
+    Type: CommaDelimitedList
+    Description: Lambda 接入 VPC 用的安全组（复用 Aurora 已放行的 SG，才能连库）。
+    Default: "sg-0dd7d0c6f8c21f92f"
+  LambdaSubnetIds:
+    Type: CommaDelimitedList
+    Description: Lambda 所在子网（须与 Aurora 同一 VPC）。
+    Default: "subnet-051776f835b1b44da,subnet-0b62c3c3da2bf7fbd,subnet-0f3f95ddb4ab8d5c5"
 
 Globals:
   Function:
@@ -50,6 +58,9 @@ Resources:
           BETTER_AUTH_SECRET: !Ref BetterAuthSecret
           BETTER_AUTH_URL: !Ref BetterAuthUrl
           CORS_ORIGIN: !Ref CorsOrigin
+      VpcConfig:
+        SecurityGroupIds: !Ref LambdaSecurityGroupIds
+        SubnetIds: !Ref LambdaSubnetIds
       Events:
         ApiRoot:
           Type: HttpApi

@@ -1,10 +1,10 @@
-name: Deploy (AWS SAM)
+name: Deploy
 
 on:
   push:
     branches: [main]
     paths:
-      - "apps/server/**"
+      - "apps/**"
       - "packages/**"
       - "template.yaml"
       - "samconfig.toml"
@@ -28,10 +28,12 @@ concurrency:
 env:
   AWS_REGION: us-east-1
   STAGE: ${{ github.event.inputs.stage || 'prod' }}
+  # stack 名与手动部署保持一致（samconfig.toml 里的 stack_name）
+  STACK_NAME: my-better-t-app
 
 jobs:
-  deploy:
-    name: Build & Deploy Server
+  deploy-server:
+    name: Build & Deploy Server (SAM)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -69,7 +71,7 @@ jobs:
       - name: SAM deploy
         run: |
           sam deploy \
-            --stack-name "my-better-t-app-${STAGE}" \
+            --stack-name "${STACK_NAME}" \
             --region "${AWS_REGION}" \
             --capabilities CAPABILITY_IAM \
             --resolve-s3 \
@@ -85,6 +87,38 @@ jobs:
       - name: Output API URL
         run: |
           aws cloudformation describe-stacks \
-            --stack-name "my-better-t-app-${STAGE}" \
+            --stack-name "${STACK_NAME}" \
             --region "${AWS_REGION}" \
             --query "Stacks[0].Outputs" --output table
+
+  deploy-web:
+    name: Build & Deploy Web (Cloudflare Pages)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web
+        env:
+          # 后端地址（构建期注入）。改域名只需改这里的仓库变量。
+          VITE_SERVER_URL: ${{ vars.VITE_SERVER_URL || 'https://api.toton123.xyz' }}
+        run: pnpm --filter web build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/web/dist --project-name my-better-t-app --branch main
